@@ -2,23 +2,36 @@ streamlit
 python-dotenv
 
 langchain
+langchain-core
 langchain-community
 langchain-openai
-langchain-text-splitters
-langgraph
-
 langchain-groq
 langchain-pinecone
+langchain-huggingface
+langchain-text-splitters
+
+langgraph
+langgraph-prebuilt
+
+groq
 pinecone
 
-openai    # for embeddings (OpenAIEmbeddings)
+sentence-transformers
+tiktoken
 
-youtube-transcript-api    # for Video Brain feature
+requests
+beautifulsoup4
+duckduckgo-search
+youtube-transcript-api
 
-# Document loaders for multiple file types
-docx2txt              # for .docx/.doc files
-unstructured          # for .html/.md parsing
+pypdf
+python-docx
+docx2txt
+unstructured
+html2text
 
-# Web research tools
-requests              # for web scraping
-beautifulsoup4        # for HTML parsing
+numpy
+pandas
+
+# Optional but useful
+python-magic

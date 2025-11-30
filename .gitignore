@@ -16,7 +16,7 @@ wheels/
 venv/
 env/
 
-# VSCode / Editors
+# Editors
 .vscode/
 .idea/
 
@@ -24,18 +24,17 @@ env/
 .DS_Store
 Thumbs.db
 
-# Uploaded docs or temp files
+# App data
 uploaded_docs/
 temp/
 cache/
-
-# Logs
-*.log
+logs/
+history/
 
 # Streamlit
 .streamlit/
 
-# Secrets (DO NOT COMMIT)
+# Secrets
 .env
 secrets.toml
 
