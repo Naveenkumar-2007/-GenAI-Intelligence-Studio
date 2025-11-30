@@ -223,6 +223,11 @@ Format:
             
             agent_prompt = f"""You are a YouTube video transcript analyzer with tools to search and analyze the transcript.
 
+IMPORTANT:
+- DO NOT CALL ANY TOOLS.
+- DO NOT output JSON.
+- DO NOT output {{"name": ...}}
+
 You have access to these tools:
 - transcript_search: Search for specific topics in the transcript
 - timestamp_lookup: Find content at specific timestamps
@@ -331,7 +336,30 @@ Provide your answer:"""
                 if LOGGING_ENABLED:
                     error_logger.error(f"Docs ReAct agent failed: {e}")
                 print(f"ReAct agent failed, falling back to simple LLM: {e}")
-                resp = self.llm.invoke(agent_prompt)
+                # Fallback prompt without tool mentions
+                fallback_prompt = f"""You are a helpful assistant answering questions based on provided documents.
+
+IMPORTANT RULES:
+- DO NOT CALL ANY TOOLS
+- DO NOT return any JSON tool call
+- DO NOT return {{"name": "..."}} 
+- ALWAYS answer in plain text ONLY
+- STAY inside the retrieved docs ONLY
+
+User question:
+{question}
+
+User memory (may be empty):
+{mem}
+
+Pre-analysis context:
+{tool_context}
+
+Retrieved documents:
+{docs_text}
+
+Answer based ONLY on docs:"""
+                resp = self.llm.invoke(fallback_prompt)
                 answer = resp.content if hasattr(resp, "content") else str(resp)
 
             return {"intermediate_answer": answer or "Could not generate answer."}
@@ -355,6 +383,11 @@ Provide your answer:"""
 
         # USE ReAct AGENT WITH PRODUCT-SPECIFIC TOOLS
         agent_prompt = f"""You are an expert product manager and system architect with specialized tools.
+
+IMPORTANT:
+- DO NOT CALL ANY TOOLS.
+- DO NOT return {{"name": "..."}}
+- ALWAYS answer in Markdown text ONLY.
 
 ## CRITICAL: Build an MVP for THIS EXACT product idea:
 {question}
@@ -408,6 +441,11 @@ Generate the MVP blueprint in well-formatted Markdown:"""
                 # Fallback to simple prompt without tool mentions
                 fallback_prompt = f"""You are an expert product manager and system architect.
 
+IMPORTANT:
+- DO NOT CALL ANY TOOLS.
+- DO NOT return {{"name": "..."}}
+- ALWAYS answer in Markdown text ONLY.
+
 ## CRITICAL: Build an MVP for THIS EXACT product idea:
 {question}
 
@@ -437,6 +475,11 @@ Generate the MVP blueprint in well-formatted Markdown:"""
                 error_logger.error(f"Product ReAct agent failed: {e}")
             # Fallback to simple LLM without tool mentions
             fallback_prompt = f"""You are an expert product manager and system architect.
+
+IMPORTANT:
+- DO NOT CALL ANY TOOLS.
+- DO NOT return {{"name": "..."}}
+- ALWAYS answer in Markdown text ONLY.
 
 ## CRITICAL: Build an MVP for THIS EXACT product idea:
 {question}
