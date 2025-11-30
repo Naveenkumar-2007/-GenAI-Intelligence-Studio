@@ -1,0 +1,51 @@
+{
+  "session_id": "session_0b17c53bc765",
+  "user_id": "user_1",
+  "mode": "research",
+  "created_at": "2025-11-30T13:38:30.898924",
+  "messages": [
+    {
+      "role": "user",
+      "content": "give correct match score of IND VS SA",
+      "mode": "research",
+      "timestamp": "2025-11-30T13:40:33.247740",
+      "metadata": {}
+    },
+    {
+      "role": "assistant",
+      "content": "No content was provided to improve.",
+      "mode": "research",
+      "timestamp": "2025-11-30T13:40:33.247740",
+      "metadata": {}
+    },
+    {
+      "role": "user",
+      "content": "what is the time of today match Ind vs Sa",
+      "mode": "research",
+      "timestamp": "2025-11-30T13:42:52.293521",
+      "metadata": {}
+    },
+    {
+      "role": "assistant",
+      "content": "## India vs South Africa – Match Time (30 Nov 2025)\n\n- **No fixture**: As of the latest available schedule (2023‑11), there is no India vs South Africa match listed for 30 Nov 2025.\n- **If a match is indeed taking place today**, the most common start times are:\n  - **ODI/T20I** – 10:00 IST (04:30 GMT)\n  - **Test** – 10:30 IST (05:00 GMT)\n\n### Quick Reference Table\n| Format | Typical Start Time (IST) | Typical Start Time (GMT) |\n|--------|--------------------------|--------------------------|\n| ODI/T20I | 10:00 IST | 04:30 GMT |\n| Test (1st Innings) | 10:30 IST | 05:00 GMT |\n| Test (2nd Innings) | 15:30 IST | 10:00 GMT |\n\n### How to Verify\n1. **Official Sources** – Check the BCCI or SA Cricket Board websites.\n2. **Live‑Score Platforms** – ESPNcricinfo, Cricbuzz, or the ICC app.\n3. **Broadcast Schedules** – TV or streaming services often list exact start times.\n\n> **Tip**: Match schedules can shift due to weather, broadcasting, or logistical reasons. Always confirm the current day’s fixture before the game.\n\n---\n\n**TL;DR:** No India vs South Africa match is scheduled for 30 Nov 2025; if it is, typical start times are 10:00 IST (ODI/T20I) or 10:30 IST (Test). Verify via official sites or live‑score apps.\n\n",
+      "mode": "research",
+      "timestamp": "2025-11-30T13:42:52.293521",
+      "metadata": {}
+    },
+    {
+      "role": "user",
+      "content": "what is the current price of iphone 17 ",
+      "mode": "research",
+      "timestamp": "2025-11-30T13:45:05.853986",
+      "metadata": {}
+    },
+    {
+      "role": "assistant",
+      "content": "**Current status**: The iPhone 17 has not yet been announced or released by Apple, so no official retail price is available.\n\n**What to expect**: Apple typically unveils new iPhone models in September each year. Until the official launch event, any price figures are purely speculative.\n\n**Recommendation**: Keep an eye on Apple’s official newsroom or reputable tech outlets (e.g., The Verge, TechCrunch, Apple Insider) for the first official announcement and pricing details.\n\n---\n\n**TL;DR:** iPhone 17 price not set yet—watch Apple’s September launch for official details.\n",
+      "mode": "research",
+      "timestamp": "2025-11-30T13:45:05.853986",
+      "metadata": {}
+    }
+  ],
+  "metadata": {}
+}

@@ -1,0 +1,111 @@
+{"timestamp": "2025-11-30T05:01:44.285526", "level": "INFO", "logger": "mode", "message": "Mode detected: product"}
+{"timestamp": "2025-11-30T05:01:44.285526", "level": "INFO", "logger": "mode", "message": "Mode=product, Question=Build a e-commerce website mvp"}
+{"timestamp": "2025-11-30T05:01:44.285526", "level": "INFO", "logger": "mode", "message": "Mode detected: product"}
+{"timestamp": "2025-11-30T05:09:52.011653", "level": "INFO", "logger": "mode", "message": "Mode detected: docs"}
+{"timestamp": "2025-11-30T05:09:52.013660", "level": "INFO", "logger": "mode", "message": "Mode=docs, Question=tell the patent name"}
+{"timestamp": "2025-11-30T05:09:52.014264", "level": "INFO", "logger": "mode", "message": "Mode detected: docs"}
+{"timestamp": "2025-11-30T05:10:51.994322", "level": "INFO", "logger": "mode", "message": "Mode detected: docs"}
+{"timestamp": "2025-11-30T05:10:51.994322", "level": "INFO", "logger": "mode", "message": "Mode=docs, Question=tell the patent name"}
+{"timestamp": "2025-11-30T05:10:51.994322", "level": "INFO", "logger": "mode", "message": "Mode detected: docs"}
+{"timestamp": "2025-11-30T05:11:28.805129", "level": "INFO", "logger": "mode", "message": "Mode detected: docs"}
+{"timestamp": "2025-11-30T05:11:28.807137", "level": "INFO", "logger": "mode", "message": "Mode=docs, Question= PATIENT INFORMATION"}
+{"timestamp": "2025-11-30T05:11:28.807544", "level": "INFO", "logger": "mode", "message": "Mode detected: docs"}
+{"timestamp": "2025-11-30T05:14:00.506903", "level": "INFO", "logger": "mode", "message": "Mode detected: docs"}
+{"timestamp": "2025-11-30T05:14:00.506903", "level": "INFO", "logger": "mode", "message": "Mode=docs, Question=COMPREHENSIVE HEALTH ANALYSIS"}
+{"timestamp": "2025-11-30T05:14:00.506903", "level": "INFO", "logger": "mode", "message": "Mode detected: docs"}
+{"timestamp": "2025-11-30T06:11:37.371306", "level": "INFO", "logger": "mode", "message": "Mode detected: research"}
+{"timestamp": "2025-11-30T06:11:37.376885", "level": "INFO", "logger": "mode", "message": "Mode=research, Question=Today which time IND VS SA ODI match start time"}
+{"timestamp": "2025-11-30T06:11:37.376885", "level": "INFO", "logger": "mode", "message": "Mode detected: research"}
+{"timestamp": "2025-11-30T06:16:30.701075", "level": "INFO", "logger": "mode", "message": "Mode detected: research"}
+{"timestamp": "2025-11-30T06:16:30.701075", "level": "INFO", "logger": "mode", "message": "Mode=research, Question=give best top 5 indian youtube Channels names with toatl subscribers and who founded that name"}
+{"timestamp": "2025-11-30T06:16:30.701075", "level": "INFO", "logger": "mode", "message": "Mode detected: research"}
+{"timestamp": "2025-11-30T06:18:46.899336", "level": "INFO", "logger": "mode", "message": "Mode detected: research"}
+{"timestamp": "2025-11-30T06:18:46.899336", "level": "INFO", "logger": "mode", "message": "Mode=research, Question=give best top 5 indian  podcast youtube Channels names with toatal subscribers and who founded that "}
+{"timestamp": "2025-11-30T06:18:46.899336", "level": "INFO", "logger": "mode", "message": "Mode detected: research"}
+{"timestamp": "2025-11-30T06:20:52.839120", "level": "INFO", "logger": "mode", "message": "Mode detected: research"}
+{"timestamp": "2025-11-30T06:20:52.839120", "level": "INFO", "logger": "mode", "message": "Mode=research, Question=give best top 5 indian  podcast youtube Channels names now current date 2025"}
+{"timestamp": "2025-11-30T06:20:52.839120", "level": "INFO", "logger": "mode", "message": "Mode detected: research"}
+{"timestamp": "2025-11-30T06:28:07.520066", "level": "INFO", "logger": "mode", "message": "Mode detected: research"}
+{"timestamp": "2025-11-30T06:28:07.520066", "level": "INFO", "logger": "mode", "message": "Mode=research, Question=give best top 5 indian  podcast youtube Channels names now current date 2025"}
+{"timestamp": "2025-11-30T06:28:07.520066", "level": "INFO", "logger": "mode", "message": "Mode detected: research"}
+{"timestamp": "2025-11-30T06:31:01.443277", "level": "INFO", "logger": "mode", "message": "Mode detected: research"}
+{"timestamp": "2025-11-30T06:31:01.443277", "level": "INFO", "logger": "mode", "message": "Mode=research, Question=give current price realmegt6t in india 8gb"}
+{"timestamp": "2025-11-30T06:31:01.443277", "level": "INFO", "logger": "mode", "message": "Mode detected: research"}
+{"timestamp": "2025-11-30T06:44:06.847737", "level": "INFO", "logger": "mode", "message": "Mode detected: research"}
+{"timestamp": "2025-11-30T06:44:06.847737", "level": "INFO", "logger": "mode", "message": "Mode=research, Question=realme GT 6 5G (8GB RAM, 256 Storage, Fluid Silver, New) give current price"}
+{"timestamp": "2025-11-30T06:44:06.847737", "level": "INFO", "logger": "mode", "message": "Mode detected: research"}
+{"timestamp": "2025-11-30T12:20:04.249460", "level": "INFO", "logger": "mode", "message": "Mode detected: research"}
+{"timestamp": "2025-11-30T12:20:04.249460", "level": "INFO", "logger": "mode", "message": "Mode=research, Question=MacBook Air M3 price India"}
+{"timestamp": "2025-11-30T12:20:04.249460", "level": "INFO", "logger": "mode", "message": "Mode detected: research"}
+{"timestamp": "2025-11-30T13:05:59.521043", "level": "INFO", "logger": "mode", "message": "Mode detected: product"}
+{"timestamp": "2025-11-30T13:05:59.521043", "level": "INFO", "logger": "mode", "message": "Mode=product, Question=Buid a stratup level genai product mvp "}
+{"timestamp": "2025-11-30T13:05:59.521043", "level": "INFO", "logger": "mode", "message": "Mode detected: product"}
+{"timestamp": "2025-11-30T13:07:49.279870", "level": "INFO", "logger": "mode", "message": "Mode detected: product"}
+{"timestamp": "2025-11-30T13:07:49.279870", "level": "INFO", "logger": "mode", "message": "Mode=product, Question=Buid a stratup level genai product mvp "}
+{"timestamp": "2025-11-30T13:07:49.279870", "level": "INFO", "logger": "mode", "message": "Mode detected: product"}
+{"timestamp": "2025-11-30T13:10:32.730854", "level": "INFO", "logger": "mode", "message": "Mode detected: product"}
+{"timestamp": "2025-11-30T13:10:32.730854", "level": "INFO", "logger": "mode", "message": "Mode=product, Question=Buid a stratup level genai product mvp "}
+{"timestamp": "2025-11-30T13:10:32.730854", "level": "INFO", "logger": "mode", "message": "Mode detected: product"}
+{"timestamp": "2025-11-30T13:11:04.302314", "level": "INFO", "logger": "mode", "message": "Mode detected: product"}
+{"timestamp": "2025-11-30T13:11:04.302314", "level": "INFO", "logger": "mode", "message": "Mode=product, Question=build a chatbot mvp "}
+{"timestamp": "2025-11-30T13:11:04.302314", "level": "INFO", "logger": "mode", "message": "Mode detected: product"}
+{"timestamp": "2025-11-30T13:11:07.237691", "level": "INFO", "logger": "mode", "message": "Mode detected: product"}
+{"timestamp": "2025-11-30T13:11:07.239788", "level": "INFO", "logger": "mode", "message": "Mode=product, Question=build a chatbot mvp "}
+{"timestamp": "2025-11-30T13:11:07.239788", "level": "INFO", "logger": "mode", "message": "Mode detected: product"}
+{"timestamp": "2025-11-30T13:11:10.975231", "level": "INFO", "logger": "mode", "message": "Mode detected: product"}
+{"timestamp": "2025-11-30T13:11:10.975231", "level": "INFO", "logger": "mode", "message": "Mode=product, Question=build a chatbot mvp "}
+{"timestamp": "2025-11-30T13:11:10.975231", "level": "INFO", "logger": "mode", "message": "Mode detected: product"}
+{"timestamp": "2025-11-30T13:11:13.835889", "level": "INFO", "logger": "mode", "message": "Mode detected: product"}
+{"timestamp": "2025-11-30T13:11:13.835889", "level": "INFO", "logger": "mode", "message": "Mode=product, Question=build a chatbot mvp "}
+{"timestamp": "2025-11-30T13:11:13.845266", "level": "INFO", "logger": "mode", "message": "Mode detected: product"}
+{"timestamp": "2025-11-30T13:11:16.617256", "level": "INFO", "logger": "mode", "message": "Mode detected: product"}
+{"timestamp": "2025-11-30T13:11:16.633154", "level": "INFO", "logger": "mode", "message": "Mode=product, Question=build a chatbot mvp "}
+{"timestamp": "2025-11-30T13:11:16.633154", "level": "INFO", "logger": "mode", "message": "Mode detected: product"}
+{"timestamp": "2025-11-30T13:11:51.659135", "level": "INFO", "logger": "mode", "message": "Mode detected: product"}
+{"timestamp": "2025-11-30T13:11:51.659135", "level": "INFO", "logger": "mode", "message": "Mode=product, Question=build a chatbot mvp "}
+{"timestamp": "2025-11-30T13:11:51.659135", "level": "INFO", "logger": "mode", "message": "Mode detected: product"}
+{"timestamp": "2025-11-30T13:12:18.508551", "level": "INFO", "logger": "mode", "message": "Mode detected: research"}
+{"timestamp": "2025-11-30T13:12:18.508551", "level": "INFO", "logger": "mode", "message": "Mode=research, Question=give correct match score of IND VS SA"}
+{"timestamp": "2025-11-30T13:12:18.508551", "level": "INFO", "logger": "mode", "message": "Mode detected: research"}
+{"timestamp": "2025-11-30T13:13:16.235750", "level": "INFO", "logger": "mode", "message": "Mode detected: research"}
+{"timestamp": "2025-11-30T13:13:16.235750", "level": "INFO", "logger": "mode", "message": "Mode=research, Question=give correct match score of IND VS SA"}
+{"timestamp": "2025-11-30T13:13:16.235750", "level": "INFO", "logger": "mode", "message": "Mode detected: research"}
+{"timestamp": "2025-11-30T13:13:37.948497", "level": "INFO", "logger": "mode", "message": "Mode detected: product"}
+{"timestamp": "2025-11-30T13:13:37.954484", "level": "INFO", "logger": "mode", "message": "Mode=product, Question=build a chatbot mvp for students"}
+{"timestamp": "2025-11-30T13:13:37.954484", "level": "INFO", "logger": "mode", "message": "Mode detected: product"}
+{"timestamp": "2025-11-30T13:14:01.093314", "level": "INFO", "logger": "mode", "message": "Mode detected: product"}
+{"timestamp": "2025-11-30T13:14:01.093314", "level": "INFO", "logger": "mode", "message": "Mode=product, Question=Buid a stratup level genai product mvp "}
+{"timestamp": "2025-11-30T13:14:01.093314", "level": "INFO", "logger": "mode", "message": "Mode detected: product"}
+{"timestamp": "2025-11-30T13:15:27.665025", "level": "INFO", "logger": "mode", "message": "Mode detected: product"}
+{"timestamp": "2025-11-30T13:15:27.665025", "level": "INFO", "logger": "mode", "message": "Mode=product, Question=build a chatbot website selling mvp"}
+{"timestamp": "2025-11-30T13:15:27.665025", "level": "INFO", "logger": "mode", "message": "Mode detected: product"}
+{"timestamp": "2025-11-30T13:31:45.741083", "level": "INFO", "logger": "mode", "message": "Mode detected: research"}
+{"timestamp": "2025-11-30T13:31:45.741083", "level": "INFO", "logger": "mode", "message": "Mode=research, Question=give correct match score of IND VS SA"}
+{"timestamp": "2025-11-30T13:31:45.741083", "level": "INFO", "logger": "mode", "message": "Mode detected: research"}
+{"timestamp": "2025-11-30T13:32:29.086083", "level": "INFO", "logger": "mode", "message": "Mode detected: product"}
+{"timestamp": "2025-11-30T13:32:29.086083", "level": "INFO", "logger": "mode", "message": "Mode=product, Question=build chatbot "}
+{"timestamp": "2025-11-30T13:32:29.086083", "level": "INFO", "logger": "mode", "message": "Mode detected: product"}
+{"timestamp": "2025-11-30T13:35:38.653507", "level": "INFO", "logger": "mode", "message": "Mode detected: research"}
+{"timestamp": "2025-11-30T13:35:38.653507", "level": "INFO", "logger": "mode", "message": "Mode=research, Question=give correct match score of IND VS SA"}
+{"timestamp": "2025-11-30T13:35:38.653507", "level": "INFO", "logger": "mode", "message": "Mode detected: research"}
+{"timestamp": "2025-11-30T13:38:40.747719", "level": "INFO", "logger": "mode", "message": "Mode detected: research"}
+{"timestamp": "2025-11-30T13:38:40.747719", "level": "INFO", "logger": "mode", "message": "Mode=research, Question=give correct match score of IND VS SA"}
+{"timestamp": "2025-11-30T13:38:40.747719", "level": "INFO", "logger": "mode", "message": "Mode detected: research"}
+{"timestamp": "2025-11-30T13:41:42.969020", "level": "INFO", "logger": "mode", "message": "Mode detected: research"}
+{"timestamp": "2025-11-30T13:41:42.969020", "level": "INFO", "logger": "mode", "message": "Mode=research, Question=what is the time of today match Ind vs Sa"}
+{"timestamp": "2025-11-30T13:41:42.969020", "level": "INFO", "logger": "mode", "message": "Mode detected: research"}
+{"timestamp": "2025-11-30T13:43:13.078086", "level": "INFO", "logger": "mode", "message": "Mode detected: product"}
+{"timestamp": "2025-11-30T13:43:13.078086", "level": "INFO", "logger": "mode", "message": "Mode=product, Question=build a chatbot website"}
+{"timestamp": "2025-11-30T13:43:13.078086", "level": "INFO", "logger": "mode", "message": "Mode detected: product"}
+{"timestamp": "2025-11-30T13:44:28.850655", "level": "INFO", "logger": "mode", "message": "Mode detected: research"}
+{"timestamp": "2025-11-30T13:44:28.850655", "level": "INFO", "logger": "mode", "message": "Mode=research, Question=what is the current price of iphone 17 "}
+{"timestamp": "2025-11-30T13:44:28.850655", "level": "INFO", "logger": "mode", "message": "Mode detected: research"}
+{"timestamp": "2025-11-30T13:46:07.064615", "level": "INFO", "logger": "mode", "message": "Mode detected: product"}
+{"timestamp": "2025-11-30T13:46:07.066639", "level": "INFO", "logger": "mode", "message": "Mode=product, Question=build a chatbot website mvp"}
+{"timestamp": "2025-11-30T13:46:07.066639", "level": "INFO", "logger": "mode", "message": "Mode detected: product"}
+{"timestamp": "2025-11-30T13:47:11.341935", "level": "INFO", "logger": "mode", "message": "Mode detected: product"}
+{"timestamp": "2025-11-30T13:47:11.341935", "level": "INFO", "logger": "mode", "message": "Mode=product, Question=build chatbot website MVP"}
+{"timestamp": "2025-11-30T13:47:11.341935", "level": "INFO", "logger": "mode", "message": "Mode detected: product"}
+{"timestamp": "2025-11-30T13:49:05.055714", "level": "INFO", "logger": "mode", "message": "Mode detected: video"}
+{"timestamp": "2025-11-30T13:49:05.055714", "level": "INFO", "logger": "mode", "message": "Mode=video, Question=Summary of this vedio"}
+{"timestamp": "2025-11-30T13:49:05.057103", "level": "INFO", "logger": "mode", "message": "Mode detected: video"}

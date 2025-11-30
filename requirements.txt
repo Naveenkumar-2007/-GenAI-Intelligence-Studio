@@ -1,0 +1,24 @@
+streamlit
+python-dotenv
+
+langchain
+langchain-community
+langchain-openai
+langchain-text-splitters
+langgraph
+
+langchain-groq
+langchain-pinecone
+pinecone
+
+openai    # for embeddings (OpenAIEmbeddings)
+
+youtube-transcript-api    # for Video Brain feature
+
+# Document loaders for multiple file types
+docx2txt              # for .docx/.doc files
+unstructured          # for .html/.md parsing
+
+# Web research tools
+requests              # for web scraping
+beautifulsoup4        # for HTML parsing

@@ -1,0 +1,23 @@
+{
+  "session_id": "session_0674c9a09274",
+  "user_id": "user_1",
+  "mode": "video",
+  "created_at": "2025-11-30T13:38:30.888933",
+  "messages": [
+    {
+      "role": "user",
+      "content": "Summary of this vedio",
+      "mode": "video",
+      "timestamp": "2025-11-30T13:50:40.472733",
+      "metadata": {}
+    },
+    {
+      "role": "assistant",
+      "content": "**Video Summary**\n\nThe interview focuses on the interviewee’s experience in the startup world, with a particular emphasis on emerging “death‑tech” companies and the broader impact of AI on business and society.\n\n| Theme | Key Points from the Transcript |\n|-------|--------------------------------|\n| **Death‑Tech Startups** | • The speaker describes a startup that charges people after they die, preserving bodies in a refrigerator to keep cells from depleting. <br>• He mentions attending a pitch event in Dubai where such companies were showcased. <br>• The concept is framed as a new niche within the tech ecosystem, highlighting how death‑related services are becoming commercialized. |\n| **AI & Automation** | • The interviewee talks about the shift from the “Internet age” to an “intelligence age” where AI interfaces replace traditional apps (e.g., Uber, Zomato). <br>• He stresses that AI should understand user intent and handle tasks invisibly, reducing human effort. <br>• The conversation touches on the future of work, suggesting only two kinds of jobs will remain: those that require curiosity or creativity, with AI handling routine tasks. |\n| **Challenges & Failures** | • When asked about failures, the interviewee reframes setbacks as challenges rather than failures. <br>• He cites academic struggles (e.g., failing CFA Level 1, BCom) and early startup hurdles (e.g., product launch, funding). <br>• He emphasizes the importance of resilience, high urgency, and self‑drive in overcoming obstacles. |\n| **Entrepreneurial Advice** | • The speaker encourages budding entrepreneurs to focus on building products that make work invisible and to seek opportunities in AI‑driven automation. <br>• He highlights the value of networking (e.g., meeting investors in New York) and the need to build credibility before raising capital. |\n| **Broader Reflections** | • The interview touches on the philosophical side of death and technology, noting that death is not natural and that technology can change how we think about it. <br>• He also reflects on the changing nature of work and the role of AI in shaping future industries. |\n\n**Takeaway:**  \nThe video offers a snapshot of a founder’s journey through cutting‑edge tech sectors—particularly death‑tech and AI—while sharing personal lessons on resilience, the importance of intent‑driven AI, and practical advice for entrepreneurs navigating a rapidly evolving landscape.",
+      "mode": "video",
+      "timestamp": "2025-11-30T13:50:40.472733",
+      "metadata": {}
+    }
+  ],
+  "metadata": {}
+}

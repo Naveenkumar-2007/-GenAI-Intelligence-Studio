@@ -1,0 +1,23 @@
+{
+  "session_id": "session_f92d261b2d28",
+  "user_id": "user_1",
+  "mode": "docs",
+  "created_at": "2025-11-30T05:09:02.052562",
+  "messages": [
+    {
+      "role": "user",
+      "content": "tell the patent name",
+      "mode": "docs",
+      "timestamp": "2025-11-30T05:09:55.542931",
+      "metadata": {}
+    },
+    {
+      "role": "assistant",
+      "content": "## Need a bit more context\n\nThanks for reaching out! To help you locate the correct patent, could you share a few more details? For example:\n\n- **Technology area** (e‑commerce, AI‑driven startup tools, chatbot interfaces, etc.)\n- **Product name or key feature** you’re interested in\n- Any **existing patents** or references you already know about\n\nWith that information, I can narrow down the search and provide the exact patent name you’re looking for.\n\n---\n\n**TL;DR:** Please provide more details about the technology or product so I can find the right patent for you.",
+      "mode": "docs",
+      "timestamp": "2025-11-30T05:09:55.542931",
+      "metadata": {}
+    }
+  ],
+  "metadata": {}
+}

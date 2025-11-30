@@ -1,0 +1,37 @@
+{
+  "session_id": "session_e361cbe5d1df",
+  "user_id": "user_1",
+  "mode": "docs",
+  "created_at": "2025-11-30T05:10:31.750059",
+  "messages": [
+    {
+      "role": "user",
+      "content": "tell the patent name",
+      "mode": "docs",
+      "timestamp": "2025-11-30T05:10:54.212738",
+      "metadata": {}
+    },
+    {
+      "role": "assistant",
+      "content": "I’m not sure which patent you’re referring to. Could you let me know the context or the specific technology/idea you have in mind? That way I can provide the correct patent name.\n\nTL;DR: Please share more details about the patent or technology you’re interested in.",
+      "mode": "docs",
+      "timestamp": "2025-11-30T05:10:54.212738",
+      "metadata": {}
+    },
+    {
+      "role": "user",
+      "content": " PATIENT INFORMATION",
+      "mode": "docs",
+      "timestamp": "2025-11-30T05:11:32.261902",
+      "metadata": {}
+    },
+    {
+      "role": "assistant",
+      "content": "## Diabetes Risk Assessment Report (Patient: Naveen)\n\n| Field | Value |\n|-------|-------|\n| **Patient Name** | Naveen |\n| **Age** | 18 years |\n| **Gender** | Male |\n| **Contact** | 6301416218 |\n| **Report Date** | November 29, 2025 (06:11 PM IST) |\n\n**Diagnosis**: Low Risk / No Diabetes (confidence = 50 %)\n\n### Key Health Metrics\n- **Glucose**: 125 mg/dL (normal 70‑100 mg/dL)\n- **Blood Pressure (diastolic)**: 79.8 mmHg (normal 60‑80 mmHg)\n- **Body Mass Index**: 31.5 kg/m² (normal 18.5‑24.9 kg/m²)\n- **Insulin**: 80.0 µU/mL (normal 16‑166 µU/mL)\n\n*Source: Document 2 – “DIABETES RISK ASSESSMENT REPORT”*\n\n> If you need a deeper analysis of these metrics or additional context, feel free to ask.\n\nTL;DR: Naveen, 18 yo male, has a low risk of diabetes with a 50 % confidence level; key metrics include slightly elevated glucose and BMI.\n\n",
+      "mode": "docs",
+      "timestamp": "2025-11-30T05:11:32.261902",
+      "metadata": {}
+    }
+  ],
+  "metadata": {}
+}
