@@ -1,0 +1,48 @@
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Build/Dist
+build/
+dist/
+*.egg-info/
+*.egg
+wheels/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Editors
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# App data
+uploaded_docs/
+temp/
+cache/
+logs/
+history/
+
+# Streamlit
+.streamlit/
+
+# Secrets
+.env
+secrets.toml
+
+# Model files
+*.h5
+*.pt
+*.bin
+*.ckpt
+
+# Jupyter
+.ipynb_checkpoints/
