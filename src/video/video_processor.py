@@ -26,6 +26,7 @@ class VideoProcessor:
         
         # Check for proxy configuration from environment / Streamlit secrets
         self.proxy_api = None
+        self._webshare_key = None
         webshare_api_key = os.getenv("WEBSHARE_API_KEY")
         if not webshare_api_key:
             try:
@@ -34,12 +35,15 @@ class VideoProcessor:
             except Exception:
                 pass
         if webshare_api_key:
+            self._webshare_key = webshare_api_key
             try:
                 self.proxy_api = YouTubeTranscriptApi(
                     proxy_config=WebshareProxyConfig(webshare_api_key)
                 )
-            except Exception:
-                pass  # Proxy config failed, will use direct
+                print(f"[VIDEO] Webshare proxy configured successfully")
+            except Exception as e:
+                print(f"[VIDEO] Webshare proxy config failed: {e}")
+                self.proxy_api = None
 
     @staticmethod
     def extract_video_id(url: str) -> str:
@@ -92,23 +96,43 @@ class VideoProcessor:
             return self._fetch_with_api(self.api, video_id)
         except Exception as direct_error:
             direct_msg = str(direct_error)
+            print(f"[VIDEO] Direct fetch failed: {direct_msg[:200]}")
         
         # Strategy 2: If we have proxy configured, try with proxy
         if self.proxy_api:
             try:
+                print("[VIDEO] Trying with Webshare proxy...")
                 return self._fetch_with_api(self.proxy_api, video_id)
             except Exception as proxy_error:
-                raise ValueError(f"Direct failed: {direct_msg[:100]}. Proxy also failed: {str(proxy_error)[:100]}")
+                raise ValueError(
+                    f"Both direct and proxy failed.\n"
+                    f"Direct: {direct_msg[:150]}\n"
+                    f"Proxy: {str(proxy_error)[:150]}"
+                )
+
+        # Strategy 3: If we have the key but proxy_api wasn't created, try creating now
+        if self._webshare_key and not self.proxy_api:
+            try:
+                print("[VIDEO] Retrying Webshare proxy creation...")
+                proxy_api = YouTubeTranscriptApi(
+                    proxy_config=WebshareProxyConfig(self._webshare_key)
+                )
+                return self._fetch_with_api(proxy_api, video_id)
+            except Exception as retry_error:
+                raise ValueError(
+                    f"Direct connection blocked by YouTube and Webshare proxy failed.\n"
+                    f"Direct: {direct_msg[:150]}\n"
+                    f"Proxy: {str(retry_error)[:150]}\n"
+                    f"Your Webshare free plan may only have datacenter proxies which YouTube also blocks. "
+                    f"Try upgrading to Webshare residential proxies, or use the app locally."
+                )
         
-        # No proxy available, provide helpful error
-        if "blocked" in direct_msg.lower() or "ip" in direct_msg.lower():
-            raise ValueError(
-                f"YouTube is blocking requests from this IP. "
-                f"To fix: Set WEBSHARE_API_KEY environment variable with a free Webshare.io API key, "
-                f"or run locally with 'streamlit run streamlit_app.py'. Original error: {direct_msg[:150]}"
-            )
-        else:
-            raise ValueError(f"Could not retrieve transcript: {direct_msg}")
+        # No proxy key at all
+        raise ValueError(
+            f"YouTube is blocking requests from this IP (Streamlit Cloud). "
+            f"Set WEBSHARE_API_KEY in Streamlit Secrets with a Webshare.io API key "
+            f"(residential proxies recommended), or run locally."
+        )
 
     def transcript_to_document(self, transcript: List[Dict], url: str) -> Document:
         """Convert transcript list → single Document with timestamps."""
