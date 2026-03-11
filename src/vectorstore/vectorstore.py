@@ -4,7 +4,11 @@ from typing import List, Optional
 import os
 
 from langchain_core.documents import Document
-from langchain_huggingface import HuggingFaceEmbeddings
+
+try:
+    from langchain_huggingface import HuggingFaceEmbeddings
+except ImportError:
+    from langchain_community.embeddings import HuggingFaceEmbeddings
 
 from langchain_community.vectorstores import FAISS
 
