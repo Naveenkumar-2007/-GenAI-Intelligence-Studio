@@ -107,32 +107,37 @@ class DocumentProcessor:
     @staticmethod
     def _get_ocr_function():
         """Return a callable that takes a PIL Image and returns extracted text string."""
-        # Try pytesseract first (faster, more reliable if Tesseract binary exists)
+        import os
+        import shutil
+
+        # Try pytesseract first
         try:
             import pytesseract
-            import shutil
 
             # Find Tesseract binary
             tesseract_path = shutil.which("tesseract")
             if not tesseract_path:
-                # Common conda install location on Windows
-                import os
-                conda_path = os.path.join(os.environ.get("CONDA_PREFIX", ""), "Library", "bin", "tesseract.exe")
-                if os.path.isfile(conda_path):
-                    tesseract_path = conda_path
-                # Also check anaconda3 base
+                # Check common locations (Linux + Windows)
+                candidates = [
+                    "/usr/bin/tesseract",           # Linux / Streamlit Cloud (apt)
+                    "/usr/local/bin/tesseract",     # Linux alt
+                ]
+                # Windows conda locations
                 home = os.path.expanduser("~")
-                for candidate in [
+                conda_prefix = os.environ.get("CONDA_PREFIX", "")
+                if conda_prefix:
+                    candidates.append(os.path.join(conda_prefix, "Library", "bin", "tesseract.exe"))
+                candidates += [
                     os.path.join(home, "anaconda3", "Library", "bin", "tesseract.exe"),
                     os.path.join(home, "miniconda3", "Library", "bin", "tesseract.exe"),
-                ]:
+                ]
+                for candidate in candidates:
                     if os.path.isfile(candidate):
                         tesseract_path = candidate
                         break
 
             if tesseract_path:
                 pytesseract.pytesseract.tesseract_cmd = tesseract_path
-                # Verify it works
                 pytesseract.get_tesseract_version()
                 print(f"[DOC PROCESSOR] Using pytesseract with {tesseract_path}")
                 return lambda img: pytesseract.image_to_string(img)

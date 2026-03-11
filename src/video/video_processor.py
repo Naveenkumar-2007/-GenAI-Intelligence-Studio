@@ -24,9 +24,15 @@ class VideoProcessor:
         # Initialize API without proxy first (for local use)
         self.api = YouTubeTranscriptApi()
         
-        # Check for proxy configuration from environment
+        # Check for proxy configuration from environment / Streamlit secrets
         self.proxy_api = None
         webshare_api_key = os.getenv("WEBSHARE_API_KEY")
+        if not webshare_api_key:
+            try:
+                import streamlit as st
+                webshare_api_key = st.secrets.get("WEBSHARE_API_KEY")
+            except Exception:
+                pass
         if webshare_api_key:
             try:
                 self.proxy_api = YouTubeTranscriptApi(
