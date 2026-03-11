@@ -7,6 +7,8 @@ from langchain_core.documents import Document
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 import re
 import os
+import json
+import tempfile
 
 # Import the API
 from youtube_transcript_api import YouTubeTranscriptApi
@@ -26,7 +28,6 @@ class VideoProcessor:
         
         # Check for proxy configuration from environment / Streamlit secrets
         self.proxy_api = None
-        self._webshare_key = None
         webshare_api_key = os.getenv("WEBSHARE_API_KEY")
         if not webshare_api_key:
             try:
@@ -35,20 +36,17 @@ class VideoProcessor:
             except Exception:
                 pass
         if webshare_api_key:
-            self._webshare_key = webshare_api_key
             try:
                 self.proxy_api = YouTubeTranscriptApi(
                     proxy_config=WebshareProxyConfig(webshare_api_key)
                 )
-                print(f"[VIDEO] Webshare proxy configured successfully")
+                print("[VIDEO] Webshare proxy configured")
             except Exception as e:
                 print(f"[VIDEO] Webshare proxy config failed: {e}")
-                self.proxy_api = None
 
     @staticmethod
     def extract_video_id(url: str) -> str:
         """Extract the YouTube video ID from a URL."""
-        # Handle various YouTube URL formats
         if "watch?v=" in url:
             video_id = url.split("watch?v=")[-1].split("&")[0].strip()
         elif "youtu.be/" in url:
@@ -56,7 +54,6 @@ class VideoProcessor:
         elif "/shorts/" in url:
             video_id = url.split("/shorts/")[-1].split("?")[0].strip()
         else:
-            # Maybe it's just the video ID
             video_id = url.strip()
         
         if not video_id or len(video_id) < 5:
@@ -65,14 +62,12 @@ class VideoProcessor:
 
     def _fetch_with_api(self, api: YouTubeTranscriptApi, video_id: str) -> List[Dict]:
         """Attempt to fetch transcript using given API instance."""
-        # Try fetching English first
         try:
             transcript = api.fetch(video_id, languages=['en', 'en-US', 'en-GB'])
             return [{"text": e.text, "start": e.start, "duration": e.duration} for e in transcript]
         except Exception:
             pass
         
-        # Fallback: List all and translate if needed
         transcript_list = api.list(video_id)
         for t in transcript_list:
             try:
@@ -87,51 +82,134 @@ class VideoProcessor:
         
         raise ValueError("No usable transcript found.")
 
+    @staticmethod
+    def _fetch_with_ytdlp(video_id: str) -> List[Dict]:
+        """Fallback: use yt-dlp to extract subtitles (works on cloud servers)."""
+        try:
+            import yt_dlp
+        except ImportError:
+            raise RuntimeError("yt-dlp not installed")
+
+        url = f"https://www.youtube.com/watch?v={video_id}"
+        with tempfile.TemporaryDirectory() as tmpdir:
+            outtmpl = os.path.join(tmpdir, "subs")
+            ydl_opts = {
+                "skip_download": True,
+                "writesubtitles": True,
+                "writeautomaticsub": True,
+                "subtitleslangs": ["en", "en-US", "en-GB"],
+                "subtitlesformat": "json3",
+                "outtmpl": outtmpl,
+                "quiet": True,
+                "no_warnings": True,
+            }
+            with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                ydl.download([url])
+
+            # Find the subtitle file
+            for fname in os.listdir(tmpdir):
+                if fname.endswith(".json3"):
+                    with open(os.path.join(tmpdir, fname), "r", encoding="utf-8") as f:
+                        data = json.load(f)
+                    events = data.get("events", [])
+                    result = []
+                    for ev in events:
+                        segs = ev.get("segs", [])
+                        text = "".join(s.get("utf8", "") for s in segs).strip()
+                        if text and text != "\n":
+                            start_ms = ev.get("tStartMs", 0)
+                            dur_ms = ev.get("dDurationMs", 0)
+                            result.append({
+                                "text": text,
+                                "start": start_ms / 1000.0,
+                                "duration": dur_ms / 1000.0,
+                            })
+                    if result:
+                        return result
+
+            # Try .vtt files as fallback
+            for fname in os.listdir(tmpdir):
+                if fname.endswith(".vtt"):
+                    with open(os.path.join(tmpdir, fname), "r", encoding="utf-8") as f:
+                        content = f.read()
+                    return VideoProcessor._parse_vtt(content)
+
+        raise ValueError("yt-dlp could not extract subtitles for this video.")
+
+    @staticmethod
+    def _parse_vtt(content: str) -> List[Dict]:
+        """Parse WebVTT subtitle content into transcript entries."""
+        lines = content.split("\n")
+        result = []
+        i = 0
+        while i < len(lines):
+            line = lines[i].strip()
+            # Look for timestamp lines like "00:00:01.000 --> 00:00:04.000"
+            if "-->" in line:
+                parts = line.split("-->")
+                start_str = parts[0].strip()
+                # Parse HH:MM:SS.mmm or MM:SS.mmm
+                start_secs = VideoProcessor._vtt_time_to_secs(start_str)
+                # Collect text lines
+                i += 1
+                text_lines = []
+                while i < len(lines) and lines[i].strip() and "-->" not in lines[i]:
+                    clean = re.sub(r"<[^>]+>", "", lines[i].strip())
+                    if clean:
+                        text_lines.append(clean)
+                    i += 1
+                text = " ".join(text_lines)
+                if text:
+                    result.append({"text": text, "start": start_secs, "duration": 0})
+            else:
+                i += 1
+        return result
+
+    @staticmethod
+    def _vtt_time_to_secs(time_str: str) -> float:
+        """Convert VTT timestamp to seconds."""
+        time_str = time_str.strip()
+        parts = time_str.replace(",", ".").split(":")
+        if len(parts) == 3:
+            return float(parts[0]) * 3600 + float(parts[1]) * 60 + float(parts[2])
+        elif len(parts) == 2:
+            return float(parts[0]) * 60 + float(parts[1])
+        return 0.0
+
     def load_transcript(self, url: str) -> List[Dict]:
-        """Load YouTube transcript with automatic proxy fallback."""
+        """Load YouTube transcript with multiple fallback strategies."""
         video_id = self.extract_video_id(url)
+        errors = []
         
-        # Strategy 1: Try direct connection first (works locally and sometimes on cloud)
+        # Strategy 1: Direct youtube-transcript-api
         try:
             return self._fetch_with_api(self.api, video_id)
-        except Exception as direct_error:
-            direct_msg = str(direct_error)
-            print(f"[VIDEO] Direct fetch failed: {direct_msg[:200]}")
+        except Exception as e:
+            errors.append(f"Direct: {str(e)[:120]}")
+            print(f"[VIDEO] Direct fetch failed: {errors[-1]}")
         
-        # Strategy 2: If we have proxy configured, try with proxy
+        # Strategy 2: youtube-transcript-api with Webshare proxy
         if self.proxy_api:
             try:
-                print("[VIDEO] Trying with Webshare proxy...")
+                print("[VIDEO] Trying Webshare proxy...")
                 return self._fetch_with_api(self.proxy_api, video_id)
-            except Exception as proxy_error:
-                raise ValueError(
-                    f"Both direct and proxy failed.\n"
-                    f"Direct: {direct_msg[:150]}\n"
-                    f"Proxy: {str(proxy_error)[:150]}"
-                )
+            except Exception as e:
+                errors.append(f"Proxy: {str(e)[:120]}")
+                print(f"[VIDEO] Proxy fetch failed: {errors[-1]}")
 
-        # Strategy 3: If we have the key but proxy_api wasn't created, try creating now
-        if self._webshare_key and not self.proxy_api:
-            try:
-                print("[VIDEO] Retrying Webshare proxy creation...")
-                proxy_api = YouTubeTranscriptApi(
-                    proxy_config=WebshareProxyConfig(self._webshare_key)
-                )
-                return self._fetch_with_api(proxy_api, video_id)
-            except Exception as retry_error:
-                raise ValueError(
-                    f"Direct connection blocked by YouTube and Webshare proxy failed.\n"
-                    f"Direct: {direct_msg[:150]}\n"
-                    f"Proxy: {str(retry_error)[:150]}\n"
-                    f"Your Webshare free plan may only have datacenter proxies which YouTube also blocks. "
-                    f"Try upgrading to Webshare residential proxies, or use the app locally."
-                )
-        
-        # No proxy key at all
+        # Strategy 3: yt-dlp (most reliable from cloud servers)
+        try:
+            print("[VIDEO] Trying yt-dlp fallback...")
+            return self._fetch_with_ytdlp(video_id)
+        except Exception as e:
+            errors.append(f"yt-dlp: {str(e)[:120]}")
+            print(f"[VIDEO] yt-dlp failed: {errors[-1]}")
+
+        # All strategies failed
         raise ValueError(
-            f"YouTube is blocking requests from this IP (Streamlit Cloud). "
-            f"Set WEBSHARE_API_KEY in Streamlit Secrets with a Webshare.io API key "
-            f"(residential proxies recommended), or run locally."
+            f"Could not fetch transcript after trying all methods.\n" +
+            "\n".join(errors) +
+            "\nTip: Some videos have no subtitles/captions available."
         )
 
     def transcript_to_document(self, transcript: List[Dict], url: str) -> Document:

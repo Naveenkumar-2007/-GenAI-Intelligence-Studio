@@ -33,6 +33,7 @@ pytesseract
 
 # Video
 youtube-transcript-api
+yt-dlp
 
 # Data & Utilities
 numpy
