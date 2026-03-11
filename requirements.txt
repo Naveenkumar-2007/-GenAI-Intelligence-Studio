@@ -9,7 +9,9 @@ langchain-community
 langchain-openai
 langchain-groq
 langchain-community
+langchain-huggingface
 sentence-transformers
+tavily-python
 
 langchain-text-splitters
 
