@@ -24,6 +24,12 @@ def tavily_live_search(query: str) -> Dict[str, Any]:
     """
     api_key = os.getenv("TAVILY_API_KEY")
     if not api_key:
+        try:
+            import streamlit as st
+            api_key = st.secrets.get("TAVILY_API_KEY")
+        except Exception:
+            pass
+    if not api_key:
         return {}
     try:
         from tavily import TavilyClient
@@ -125,6 +131,12 @@ def _search_bing(query: str) -> List[Dict]:
 def build_tavily_search_tool() -> Optional[Tool]:
     """Build a Tavily-powered web search tool for live, up-to-date results."""
     api_key = os.getenv("TAVILY_API_KEY")
+    if not api_key:
+        try:
+            import streamlit as st
+            api_key = st.secrets.get("TAVILY_API_KEY")
+        except Exception:
+            pass
     if not api_key:
         return None
 
