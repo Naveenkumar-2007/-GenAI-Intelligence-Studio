@@ -1,42 +1,40 @@
+# Core
 streamlit
-youtube-transcript-api
-
 python-dotenv
 
+# LLM & Agentic
 langchain
 langchain-core
 langchain-community
-langchain-openai
 langchain-groq
-langchain-community
 langchain-huggingface
-sentence-transformers
-tavily-python
-
 langchain-text-splitters
-
 langgraph
-langgraph-prebuilt
 
-groq
+# Embeddings & Vector Store
+sentence-transformers
 faiss-cpu
 
-sentence-transformers
-tiktoken
-
+# Web Search & Research
+tavily-python
+duckduckgo-search
 requests
 beautifulsoup4
-duckduckgo-search
 
-
+# Document Processing
 pypdf
 python-docx
 docx2txt
 unstructured
 html2text
+pymupdf
+Pillow
+pytesseract
 
+# Video
+youtube-transcript-api
+
+# Data & Utilities
 numpy
-pandas
-
-# Optional but useful
-python-magic
+tiktoken
+groq
