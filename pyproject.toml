@@ -27,4 +27,5 @@ dependencies = [
     "tiktoken>=0.5.0",
     "unstructured>=0.10.0",
     "youtube-transcript-api>=1.2.3",
+    "yt-dlp>=2024.0.0",
 ]
