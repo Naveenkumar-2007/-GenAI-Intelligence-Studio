@@ -9,6 +9,8 @@ import re
 import os
 import json
 import tempfile
+import shutil
+import subprocess
 
 # Import the API
 from youtube_transcript_api import YouTubeTranscriptApi
@@ -85,26 +87,56 @@ class VideoProcessor:
     @staticmethod
     def _fetch_with_ytdlp(video_id: str) -> List[Dict]:
         """Fallback: use yt-dlp to extract subtitles (works on cloud servers)."""
-        try:
-            import yt_dlp
-        except ImportError:
-            raise RuntimeError("yt-dlp not installed")
-
         url = f"https://www.youtube.com/watch?v={video_id}"
         with tempfile.TemporaryDirectory() as tmpdir:
             outtmpl = os.path.join(tmpdir, "subs")
-            ydl_opts = {
-                "skip_download": True,
-                "writesubtitles": True,
-                "writeautomaticsub": True,
-                "subtitleslangs": ["en", "en-US", "en-GB"],
-                "subtitlesformat": "json3",
-                "outtmpl": outtmpl,
-                "quiet": True,
-                "no_warnings": True,
-            }
-            with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-                ydl.download([url])
+            used_strategy = None
+
+            # Strategy A: python module
+            try:
+                import yt_dlp  # type: ignore[import-not-found]
+
+                ydl_opts = {
+                    "skip_download": True,
+                    "writesubtitles": True,
+                    "writeautomaticsub": True,
+                    "subtitleslangs": ["en", "en-US", "en-GB"],
+                    "subtitlesformat": "json3/vtt",
+                    "outtmpl": outtmpl,
+                    "quiet": True,
+                    "no_warnings": True,
+                }
+                with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                    ydl.download([url])
+                used_strategy = "python-module"
+            except ImportError:
+                # Strategy B: CLI binary (common in some deployments)
+                ytdlp_cmd = shutil.which("yt-dlp") or shutil.which("yt_dlp")
+                if not ytdlp_cmd:
+                    raise RuntimeError(
+                        "yt-dlp not installed (module + CLI missing). "
+                        "Add 'yt-dlp' to requirements.txt for deployment."
+                    )
+
+                cmd = [
+                    ytdlp_cmd,
+                    "--skip-download",
+                    "--write-subs",
+                    "--write-auto-subs",
+                    "--sub-langs",
+                    "en,en-US,en-GB",
+                    "--sub-format",
+                    "json3/vtt",
+                    "-o",
+                    outtmpl,
+                    url,
+                ]
+                try:
+                    subprocess.run(cmd, check=True, capture_output=True, text=True)
+                    used_strategy = "cli"
+                except subprocess.CalledProcessError as e:
+                    err = (e.stderr or e.stdout or "")[:220]
+                    raise RuntimeError(f"yt-dlp CLI failed: {err}") from e
 
             # Find the subtitle file
             for fname in os.listdir(tmpdir):
@@ -134,6 +166,8 @@ class VideoProcessor:
                         content = f.read()
                     return VideoProcessor._parse_vtt(content)
 
+        if used_strategy:
+            raise ValueError(f"yt-dlp ({used_strategy}) ran but no subtitle tracks were available.")
         raise ValueError("yt-dlp could not extract subtitles for this video.")
 
     @staticmethod
