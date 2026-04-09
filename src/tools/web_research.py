@@ -15,6 +15,9 @@ import requests
 from bs4 import BeautifulSoup
 from langchain_core.tools import Tool
 
+# Silence downstream warning and identify requests when USER_AGENT is not explicitly set.
+os.environ.setdefault("USER_AGENT", "GenAI-Intelligence-Studio/1.0")
+
 
 def tavily_live_search(query: str) -> Dict[str, Any]:
     """

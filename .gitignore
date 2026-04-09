@@ -30,6 +30,7 @@ temp/
 cache/
 logs/
 history/
+src/memory/user_memory.json
 
 # Streamlit
 .streamlit/

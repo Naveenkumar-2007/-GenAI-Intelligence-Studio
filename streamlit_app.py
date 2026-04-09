@@ -18,6 +18,43 @@ from src.memory.chat_history import chat_history, ChatSession
 from src.tools.web_research import tavily_live_search
 
 
+def render_llm_error(exc: Exception, context: str) -> None:
+    """Render actionable LLM/provider errors for the UI."""
+    err = str(exc)
+    err_lower = err.lower()
+
+    if "organization_restricted" in err_lower or "organization has been restricted" in err_lower:
+        st.error("🚫 **LLM Provider Account Restricted**")
+        st.warning(
+            """
+            Your current `GROQ_API_KEY` is tied to an organization that is restricted.
+
+            1. Generate a fresh API key in Groq Console: https://console.groq.com/keys
+            2. Update `.env` with the new `GROQ_API_KEY`
+            3. Restart Streamlit so the new key is loaded
+            4. If it still fails, contact Groq support for account review
+            """
+        )
+        return
+
+    if "rate limit" in err_lower or "rate_limit" in err_lower:
+        st.error("🚫 **Rate Limit Reached!**")
+        st.warning(
+            """
+            You've hit your daily token limit with Groq. Here's what you can do:
+
+            1. Wait: Limits reset daily. Try again in a few hours.
+            2. Upgrade: Go to https://console.groq.com/settings/billing and upgrade to Dev Tier.
+            3. Switch models: Some models have different limits.
+
+            Current usage on free tier can be quickly exhausted for long prompts.
+            """
+        )
+        return
+
+    st.error(f"Error {context}: {exc}")
+
+
 def init_session_state():
     """Initialize all session state variables."""
     if "docs_graph" not in st.session_state:
@@ -383,19 +420,7 @@ def main():
                                 st.code(result_state.get("memory_to_save"))
                     except Exception as e:
                         elapsed = time.time() - start
-                        if "Rate limit" in str(e) or "rate_limit" in str(e):
-                            st.error("🚫 **Rate Limit Reached!**")
-                            st.warning("""
-                            You've hit your daily token limit with Groq. Here's what you can do:
-                            
-                            1. **Wait**: Limits reset daily. Try again in a few hours.
-                            2. **Upgrade**: Go to [Groq Console](https://console.groq.com/settings/billing) and upgrade to Dev Tier for higher limits.
-                            3. **Switch Models**: Some models have different limits.
-                            
-                            Current usage: ~200k tokens/day on free tier.
-                            """)
-                        else:
-                            st.error(f"Error processing question: {e}")
+                        render_llm_error(e, "processing question")
                         st.caption(f"⏱️ Attempt took {elapsed:.2f} seconds")
 
         if st.session_state.history_docs:
@@ -485,19 +510,7 @@ def main():
                             st.code(result_state.get("memory_to_save"))
                 except Exception as e:
                     elapsed = time.time() - start
-                    if "Rate limit" in str(e) or "rate_limit" in str(e):
-                        st.error("🚫 **Rate Limit Reached!**")
-                        st.warning("""
-                        You've hit your daily token limit with Groq. Here's what you can do:
-                        
-                        1. **Wait**: Limits reset daily. Try again in a few hours.
-                        2. **Upgrade**: Go to [Groq Console](https://console.groq.com/settings/billing) and upgrade to Dev Tier for higher limits.
-                        3. **Switch Models**: Some models have different limits.
-                        
-                        Current usage: ~200k tokens/day on free tier.
-                        """)
-                    else:
-                        st.error(f"Error building MVP: {e}")
+                    render_llm_error(e, "building MVP")
                     st.caption(f"⏱️ Attempt took {elapsed:.2f} seconds")
 
         if st.session_state.history_product:
@@ -631,19 +644,7 @@ def main():
                                     )
                     except Exception as e:
                         elapsed = time.time() - start
-                        if "Rate limit" in str(e) or "rate_limit" in str(e):
-                            st.error("🚫 **Rate Limit Reached!**")
-                            st.warning("""
-                            You've hit your daily token limit with Groq. Here's what you can do:
-                            
-                            1. **Wait**: Limits reset daily. Try again in a few hours.
-                            2. **Upgrade**: Go to [Groq Console](https://console.groq.com/settings/billing) and upgrade to Dev Tier for higher limits.
-                            3. **Switch Models**: Some models have different limits.
-                            
-                            Current usage: ~200k tokens/day on free tier.
-                            """)
-                        else:
-                            st.error(f"Error analyzing video: {e}")
+                        render_llm_error(e, "analyzing video")
                         st.caption(f"⏱️ Attempt took {elapsed:.2f} seconds")
 
     # ---------- RESEARCH AGENT ----------
@@ -752,17 +753,7 @@ def main():
                 except Exception as e:
                     elapsed = time.time() - start
                     progress_bar.progress(100, "❌ Research failed!")
-                    if "Rate limit" in str(e) or "rate_limit" in str(e):
-                        st.error("🚫 **Rate Limit Reached!**")
-                        st.warning("""
-                        You've hit your daily token limit with Groq. Here's what you can do:
-                        
-                        1. **Wait**: Limits reset daily. Try again in a few hours.
-                        2. **Upgrade**: Go to [Groq Console](https://console.groq.com/settings/billing) and upgrade to Dev Tier for higher limits.
-                        3. **Switch Models**: Some models have different limits.
-                        """)
-                    else:
-                        st.error(f"Error during research: {e}")
+                    render_llm_error(e, "during research")
                     st.caption(f"⏱️ Attempt took {elapsed:.2f} seconds")
 
         # ---------- RENDER SEARCH RESULTS WITH TABS ----------

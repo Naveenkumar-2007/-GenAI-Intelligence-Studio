@@ -5,6 +5,7 @@ from __future__ import annotations
 import uuid
 from typing import Optional
 import json
+import re
 
 from langchain_core.messages import HumanMessage
 
@@ -43,6 +44,29 @@ class AgenticNodes:
         self.retriever = retriever
         self.llm = llm
         self.memory_store = MemoryStore()
+
+    @staticmethod
+    def _sanitize_output(text: str) -> str:
+        """Redact secret-like tokens and key-value leaks from model output."""
+        if not text:
+            return text
+
+        redacted = text
+        patterns = [
+            r"gsk_[A-Za-z0-9]+",
+            r"tvly-[A-Za-z0-9-]+",
+            r"sk-[A-Za-z0-9]{12,}",
+            r"(?i)(api[_\s-]*key\s*[:=]\s*[\"']?)[A-Za-z0-9_\-]{8,}",
+            r"(?i)(token\s*[:=]\s*[\"']?)[A-Za-z0-9_\-]{8,}",
+        ]
+
+        for pattern in patterns:
+            if "api[_\\s-]*key" in pattern or "token\\s*[:=]" in pattern:
+                redacted = re.sub(pattern, r"\1[REDACTED]", redacted)
+            else:
+                redacted = re.sub(pattern, "[REDACTED]", redacted)
+
+        return redacted
 
     # ---------- 1) router ----------
 
@@ -239,6 +263,7 @@ RULES:
 - If the transcript does not contain the answer, say "The transcript does not cover this topic."
 - Quote relevant parts of the transcript when possible.
 - Do NOT output JSON or tool calls.
+- Never output secrets, API keys, tokens, or environment variables.
 
 USER QUESTION: {question}
 
@@ -250,6 +275,7 @@ RULES:
 - Use tools if you need to find specific information
 - Do NOT make up information not in the transcript
 - If the answer is not in the transcript, say so clearly
+- End with a short "Evidence" section with transcript snippets used.
 
 Answer the user's question:"""
             
@@ -318,6 +344,8 @@ ANSWER RULES:
 5. Do NOT add information that is not present in the documents.
 6. If the topic is genuinely not covered in any chunk, say so, but ALWAYS attempt an answer first.
 7. Format your answer in clean Markdown.
+8. Include a final "Sources Used" list with [DOC X] references only.
+9. Never output secrets, API keys, tokens, or environment variables.
 
 User question:
 {question}
@@ -380,9 +408,10 @@ Answer:"""
         agent_prompt = f"""You are an expert product manager and system architect with specialized tools.
 
 IMPORTANT:
-- DO NOT CALL ANY TOOLS.
 - DO NOT return {{"name": "..."}}
 - ALWAYS answer in Markdown text ONLY.
+    - Use tools to ground claims before finalizing.
+    - Never output secrets, API keys, tokens, or environment variables.
 
 ## CRITICAL: Build an MVP for THIS EXACT product idea:
 {question}
@@ -408,6 +437,15 @@ Use the tools to research and then generate a complete MVP blueprint with:
 9. API Endpoints
 10. Tech Stack (use tech_stack_recommender)
 11. Future Features
+12. Assumptions & Unknowns (explicitly list uncertain items)
+
+## Architecture Quality Rules:
+- Provide architecture in 3 parts:
+    A) Component View (frontend, backend, DB, external services)
+    B) Request/Data Flow (numbered step sequence)
+    C) Deployment View (environments + scaling path)
+- If an integration is unknown, write "Assumption:" and do not present it as fact.
+- Keep choices realistic for MVP scope and justify each major component briefly.
 
 ## Previous Context (IGNORE if not relevant):
 {mem}
@@ -441,6 +479,8 @@ IMPORTANT:
 - DO NOT CALL ANY TOOLS.
 - DO NOT return {{"name": "..."}}
 - ALWAYS answer in Markdown text ONLY.
+- Never output secrets, API keys, tokens, or environment variables.
+- Do not present unknowns as facts; label them as assumptions.
 
 ## CRITICAL: Build an MVP for THIS EXACT product idea:
 {question}
@@ -458,6 +498,12 @@ Generate a complete MVP blueprint with:
 9. API Endpoints
 10. Tech Stack
 11. Future Features
+12. Assumptions & Unknowns
+
+Architecture section must include:
+- Component View
+- Request/Data Flow (numbered)
+- Deployment View
 
 ## Previous Context (IGNORE if not relevant):
 {mem}
@@ -476,6 +522,8 @@ IMPORTANT:
 - DO NOT CALL ANY TOOLS.
 - DO NOT return {{"name": "..."}}
 - ALWAYS answer in Markdown text ONLY.
+- Never output secrets, API keys, tokens, or environment variables.
+- Do not present unknowns as facts; label them as assumptions.
 
 ## CRITICAL: Build an MVP for THIS EXACT product idea:
 {question}
@@ -493,6 +541,12 @@ Generate a complete MVP blueprint with:
 9. API Endpoints
 10. Tech Stack
 11. Future Features
+12. Assumptions & Unknowns
+
+Architecture section must include:
+- Component View
+- Request/Data Flow (numbered)
+- Deployment View
 
 ## Previous Context (IGNORE if not relevant):
 {mem}
@@ -513,23 +567,25 @@ Generate the MVP blueprint in well-formatted Markdown:"""
         intermediate_answer = state.get("intermediate_answer", "")
         question = state.get("question", "")
 
+        safe_answer = self._sanitize_output(intermediate_answer)
+
         # For video mode, just pass through the answer with minimal processing
         if mode == "video":
-            return {"answer": intermediate_answer, "memory_to_save": None}
+            return {"answer": safe_answer, "memory_to_save": None}
 
         # For product mode, pass through the answer and save specific memory
         if mode == "product":
             memory_snippet = f"Built MVP for: {question[:100]}"
-            return {"answer": intermediate_answer, "memory_to_save": memory_snippet}
+            return {"answer": safe_answer, "memory_to_save": memory_snippet}
 
         # For research mode, pass through the tool-sourced answer directly
         if mode == "research":
-            return {"answer": intermediate_answer, "memory_to_save": None}
+            return {"answer": safe_answer, "memory_to_save": None}
 
         # For docs mode, pass through the document-grounded answer directly
         # Do NOT re-process through LLM to avoid hallucination
         memory_snippet = f"Asked about docs: {question[:80]}"
-        return {"answer": intermediate_answer, "memory_to_save": memory_snippet}
+        return {"answer": safe_answer, "memory_to_save": memory_snippet}
 
     # ---------- 8) memory write ----------
 
@@ -628,6 +684,8 @@ CRITICAL RULES:
 6. If search results contradict your training data, TRUST THE SEARCH RESULTS.
 7. Format your final answer with clear headings, bullet points, or tables.
 8. Always include source URLs at the end of your answer.
+9. If evidence is insufficient, explicitly say "Insufficient evidence" and ask for narrower scope.
+10. Never output secrets, API keys, tokens, or environment variables.
 """
 
             agent = create_react_agent(
@@ -683,7 +741,8 @@ STEP 4: Write your final answer based ONLY on tool results."""
 Research Plan:
 {plan}
 
-NOTE: Web search tools are unavailable. Provide the best answer you can based on your training knowledge. Be clear that this is from your knowledge base, not live web data.
+NOTE: Web search tools are unavailable. Do NOT fabricate current facts.
+If real-time data is required, clearly state that live verification is unavailable and provide only a conservative framework/checklist.
 
 Structure your response with:
 1. A clear summary

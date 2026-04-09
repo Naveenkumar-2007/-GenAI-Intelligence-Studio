@@ -4,7 +4,7 @@ import os
 from dotenv import load_dotenv
 from langchain_groq import ChatGroq
 
-load_dotenv()
+load_dotenv(override=True)
 
 
 def _get_secret(key: str, default: str | None = None) -> str | None:
@@ -27,13 +27,10 @@ class Config:
     TAVILY_API_KEY: str | None = _get_secret("TAVILY_API_KEY")
     
     # Models
-    GROQ_MODEL_NAME: str = os.getenv("GROQ_MODEL_NAME", "openai/gpt-oss-20b")
+    GROQ_MODEL_NAME: str = os.getenv("GROQ_MODEL_NAME", "llama-3.3-70b-versatile")
     EMBEDDING_MODEL_NAME: str = os.getenv(
         "EMBEDDING_MODEL", "sentence-transformers/all-mpnet-base-v2"
     )
-    # Pinecone (Deprecated / Optional)
-    # PINECONE_INDEX_NAME: str = os.getenv("PINECONE_INDEX_NAME", "genai-intel-index")
-    # PINECONE_NAMESPACE: str = os.getenv("PINECONE_NAMESPACE", "docs")
 
     # Document processing
     CHUNK_SIZE: int = 500
@@ -42,9 +39,11 @@ class Config:
     @classmethod
     def get_llm(cls):
         """Initialize and return a Groq chat model."""
-        # Re-read at call time in case secrets loaded after import
-        if not cls.GROQ_API_KEY:
-            cls.GROQ_API_KEY = _get_secret("GROQ_API_KEY")
+        # Re-read at call time in case env changed
+        load_dotenv(override=True)
+        cls.GROQ_API_KEY = _get_secret("GROQ_API_KEY")
+        cls.GROQ_MODEL_NAME = os.getenv("GROQ_MODEL_NAME", "llama-3.3-70b-versatile")
+        
         if not cls.GROQ_API_KEY:
             raise ValueError("GROQ_API_KEY not set. Add it to .env or Streamlit Secrets.")
 
