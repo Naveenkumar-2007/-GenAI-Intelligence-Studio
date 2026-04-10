@@ -91,25 +91,83 @@ class VideoProcessor:
         with tempfile.TemporaryDirectory() as tmpdir:
             outtmpl = os.path.join(tmpdir, "subs")
             used_strategy = None
+            strategy_errors = []
+
+            cookie_file = os.getenv("YTDLP_COOKIES_FILE", "").strip()
+            extractor_variants = [
+                "youtube:player_client=android,web;skip=dash,hls",
+                "youtube:player_client=web,ios",
+                "youtube:player_client=tv_embedded",
+            ]
+
+            def _build_opts(extractor_args: str) -> Dict:
+                opts = {
+                    "skip_download": True,
+                    "writesubtitles": True,
+                    "writeautomaticsub": True,
+                    "subtitleslangs": ["en", "en-US", "en-GB", "en-*", "hi", "ta", "te", "ml", "kn"],
+                    "subtitlesformat": "json3/vtt/best",
+                    "outtmpl": outtmpl,
+                    "quiet": True,
+                    "no_warnings": True,
+                    "extractor_args": {"youtube": extractor_args.replace("youtube:", "")},
+                    "force_ipv4": True,
+                }
+                if cookie_file and os.path.exists(cookie_file):
+                    opts["cookiefile"] = cookie_file
+                return opts
+
+            def _parse_saved_subtitles() -> List[Dict]:
+                # Find subtitle files saved by yt-dlp and parse them.
+                for fname in os.listdir(tmpdir):
+                    if fname.endswith(".json3"):
+                        with open(os.path.join(tmpdir, fname), "r", encoding="utf-8") as f:
+                            data = json.load(f)
+                        events = data.get("events", [])
+                        result = []
+                        for ev in events:
+                            segs = ev.get("segs", [])
+                            text = "".join(s.get("utf8", "") for s in segs).strip()
+                            if text and text != "\n":
+                                start_ms = ev.get("tStartMs", 0)
+                                dur_ms = ev.get("dDurationMs", 0)
+                                result.append({
+                                    "text": text,
+                                    "start": start_ms / 1000.0,
+                                    "duration": dur_ms / 1000.0,
+                                })
+                        if result:
+                            return result
+
+                for fname in os.listdir(tmpdir):
+                    if fname.endswith(".vtt"):
+                        with open(os.path.join(tmpdir, fname), "r", encoding="utf-8") as f:
+                            content = f.read()
+                        parsed = VideoProcessor._parse_vtt(content)
+                        if parsed:
+                            return parsed
+                return []
 
             # Strategy A: python module
             try:
                 import yt_dlp  # type: ignore[import-not-found]
 
-                ydl_opts = {
-                    "skip_download": True,
-                    "writesubtitles": True,
-                    "writeautomaticsub": True,
-                    "subtitleslangs": ["en", "en-US", "en-GB"],
-                    "subtitlesformat": "json3/vtt",
-                    "outtmpl": outtmpl,
-                    "quiet": True,
-                    "no_warnings": True,
-                }
-                with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-                    ydl.download([url])
-                used_strategy = "python-module"
+                for extractor_args in extractor_variants:
+                    try:
+                        ydl_opts = _build_opts(extractor_args)
+                        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                            ydl.download([url])
+                        used_strategy = f"python-module[{extractor_args}]"
+                        parsed = _parse_saved_subtitles()
+                        if parsed:
+                            return parsed
+                    except Exception as e:
+                        strategy_errors.append(f"py:{extractor_args}:{str(e)[:120]}")
+                        continue
             except ImportError:
+                pass
+
+            if not used_strategy:
                 # Strategy B: CLI binary (common in some deployments)
                 ytdlp_cmd = shutil.which("yt-dlp") or shutil.which("yt_dlp")
                 if not ytdlp_cmd:
@@ -118,57 +176,46 @@ class VideoProcessor:
                         "Add 'yt-dlp' to requirements.txt for deployment."
                     )
 
-                cmd = [
-                    ytdlp_cmd,
-                    "--skip-download",
-                    "--write-subs",
-                    "--write-auto-subs",
-                    "--sub-langs",
-                    "en,en-US,en-GB",
-                    "--sub-format",
-                    "json3/vtt",
-                    "-o",
-                    outtmpl,
-                    url,
-                ]
-                try:
-                    subprocess.run(cmd, check=True, capture_output=True, text=True)
-                    used_strategy = "cli"
-                except subprocess.CalledProcessError as e:
-                    err = (e.stderr or e.stdout or "")[:220]
-                    raise RuntimeError(f"yt-dlp CLI failed: {err}") from e
+                for extractor_args in extractor_variants:
+                    cmd = [
+                        ytdlp_cmd,
+                        "--skip-download",
+                        "--write-subs",
+                        "--write-auto-subs",
+                        "--sub-langs",
+                        "en,en-US,en-GB,en-*,hi,ta,te,ml,kn",
+                        "--sub-format",
+                        "json3/vtt/best",
+                        "--force-ipv4",
+                        "--extractor-args",
+                        extractor_args,
+                        "-o",
+                        outtmpl,
+                        url,
+                    ]
+                    if cookie_file and os.path.exists(cookie_file):
+                        cmd.extend(["--cookies", cookie_file])
 
-            # Find the subtitle file
-            for fname in os.listdir(tmpdir):
-                if fname.endswith(".json3"):
-                    with open(os.path.join(tmpdir, fname), "r", encoding="utf-8") as f:
-                        data = json.load(f)
-                    events = data.get("events", [])
-                    result = []
-                    for ev in events:
-                        segs = ev.get("segs", [])
-                        text = "".join(s.get("utf8", "") for s in segs).strip()
-                        if text and text != "\n":
-                            start_ms = ev.get("tStartMs", 0)
-                            dur_ms = ev.get("dDurationMs", 0)
-                            result.append({
-                                "text": text,
-                                "start": start_ms / 1000.0,
-                                "duration": dur_ms / 1000.0,
-                            })
-                    if result:
-                        return result
+                    try:
+                        subprocess.run(cmd, check=True, capture_output=True, text=True)
+                        used_strategy = f"cli[{extractor_args}]"
+                        parsed = _parse_saved_subtitles()
+                        if parsed:
+                            return parsed
+                    except subprocess.CalledProcessError as e:
+                        err = (e.stderr or e.stdout or "")[:220]
+                        strategy_errors.append(f"cli:{extractor_args}:{err}")
+                        continue
 
-            # Try .vtt files as fallback
-            for fname in os.listdir(tmpdir):
-                if fname.endswith(".vtt"):
-                    with open(os.path.join(tmpdir, fname), "r", encoding="utf-8") as f:
-                        content = f.read()
-                    return VideoProcessor._parse_vtt(content)
+            # Final parse attempt in case files were written by a previous attempt.
+            parsed = _parse_saved_subtitles()
+            if parsed:
+                return parsed
 
         if used_strategy:
             raise ValueError(f"yt-dlp ({used_strategy}) ran but no subtitle tracks were available.")
-        raise ValueError("yt-dlp could not extract subtitles for this video.")
+        detail = " | ".join(strategy_errors[:3]) if strategy_errors else "no strategy details"
+        raise ValueError(f"yt-dlp could not extract subtitles for this video ({detail}).")
 
     @staticmethod
     def _parse_vtt(content: str) -> List[Dict]:
@@ -243,7 +290,8 @@ class VideoProcessor:
         raise ValueError(
             f"Could not fetch transcript after trying all methods.\n" +
             "\n".join(errors) +
-            "\nTip: Some videos have no subtitles/captions available."
+            "\nTip: Some videos have no subtitles/captions, are region-restricted, or require cookies. "
+            "If needed, set YTDLP_COOKIES_FILE in .env to a valid YouTube cookies.txt file."
         )
 
     def transcript_to_document(self, transcript: List[Dict], url: str) -> Document:
