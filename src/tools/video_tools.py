@@ -100,11 +100,19 @@ def build_video_summarizer_tool(llm: BaseLanguageModel, retriever) -> Tool:
         
         transcript = "\n".join(d.page_content for d in docs[:10])
         
-        prompt = f"""Summarize the following video transcript section about "{topic}":
+        prompt = f"""You are summarizing a video transcript section about: "{topic}"
 
-{transcript}
+    Transcript:
+    {transcript}
 
-Provide a concise summary (3-5 bullet points) of the key information:"""
+    Output requirements:
+    1. One-line TL;DR
+    2. 4-7 bullets of key points
+    3. Timeline bullets when timestamps are present (e.g., [5m20s] concept)
+    4. 2 practical takeaways
+    5. If evidence is weak, explicitly say so
+
+    Keep claims grounded in transcript text only."""
         
         resp = llm.invoke(prompt)
         return resp.content if hasattr(resp, "content") else str(resp)

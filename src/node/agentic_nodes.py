@@ -125,12 +125,16 @@ class AgenticNodes:
         
         # For video mode, get more chunks to have fuller context
         if mode == "video":
-            # Use a broader search to get more transcript content
+            # Use broader retrieval for summary/overview requests.
+            summary_keywords = ["summary", "summarize", "summarise", "overview", "lecture", "full video", "main points"]
+            is_summary = any(kw in question.lower() for kw in summary_keywords)
+            k_val = 24 if is_summary else 15
+
             # Safely update search_kwargs instead of replacing
             if hasattr(self.retriever, 'search_kwargs') and self.retriever.search_kwargs is not None:
-                self.retriever.search_kwargs.update({"k": 15})
+                self.retriever.search_kwargs.update({"k": k_val})
             elif hasattr(self.retriever, 'search_kwargs'):
-                self.retriever.search_kwargs = {"k": 15}
+                self.retriever.search_kwargs = {"k": k_val}
             docs = self.retriever.invoke(question)
         else:
             # For docs mode - detect broad queries (summary, overview, etc.) and fetch more chunks
@@ -191,16 +195,17 @@ class AgenticNodes:
 
         question = state.get("question", "")
         prompt = f"""
-You are analyzing a YouTube lecture.
+    You are analyzing a YouTube video transcript.
 
-User question:
-{question}
+    User question:
+    {question}
 
-Generate in 3 bullets:
-1. What part of the video might contain the answer?
-2. What reasoning style is needed?
-3. What to focus on from the transcript?
-"""
+    Return exactly 4 bullets:
+    1) Query type (fact lookup / conceptual explanation / full summary / compare points)
+    2) Which transcript regions to prioritize
+    3) Evidence extraction strategy (quotes, timestamps, contrasts)
+    4) Output shape to produce (short / balanced / detailed)
+    """
         resp = self.llm.invoke(prompt)
         return {"tool_context": resp.content}
 
@@ -217,18 +222,22 @@ Generate in 3 bullets:
         )
 
         prompt = f"""
-You are a lecture summarizer.
+    You are a lecture chaptering assistant.
 
-Here is part of the transcript:
-{transcript}
+    Here is part of the transcript:
+    {transcript}
 
-Create 5–8 short chapter titles with timestamps.
+    Create 6-10 chapter titles with accurate timestamps.
+    Rules:
+    - Keep each title short and specific.
+    - Ensure chronological order.
+    - Prefer meaningful transitions (problem, method, example, conclusion).
 
-Format:
-[0m00s] Introduction
-[5m10s] Main concept
-...
-"""
+    Format only:
+    [0m00s] Introduction
+    [5m10s] Main concept
+    ...
+    """
 
         resp = self.llm.invoke(prompt)
         chapters = resp.content.split("\n")
@@ -262,6 +271,8 @@ RULES:
 - Do NOT make up information that is not in the transcript.
 - If the transcript does not contain the answer, say "The transcript does not cover this topic."
 - Quote relevant parts of the transcript when possible.
+- Include timestamps for any major point when available.
+- If asked for a summary, produce: TL;DR, timeline summary, key insights, and practical takeaways.
 - Do NOT output JSON or tool calls.
 - Never output secrets, API keys, tokens, or environment variables.
 
@@ -275,7 +286,7 @@ RULES:
 - Use tools if you need to find specific information
 - Do NOT make up information not in the transcript
 - If the answer is not in the transcript, say so clearly
-- End with a short "Evidence" section with transcript snippets used.
+- End with a short "Evidence" section with timestamped transcript snippets used.
 
 Answer the user's question:"""
             

@@ -86,6 +86,201 @@ def init_session_state():
         st.session_state.history_research = []
 
 
+def apply_custom_theme() -> None:
+    """Apply a polished, responsive visual style across the app."""
+    st.markdown(
+        """
+        <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap');
+
+        :root {
+            --gs-bg: var(--background-color);
+            --gs-surface: var(--secondary-background-color);
+            --gs-text: var(--text-color);
+            --gs-brand: var(--primary-color);
+            --gs-line: color-mix(in srgb, var(--text-color) 15%, transparent);
+            --gs-soft: color-mix(in srgb, var(--text-color) 65%, transparent);
+        }
+
+        html, body, [class*="css"] {
+            font-family: 'IBM Plex Sans', sans-serif;
+        }
+
+        h1, h2, h3 {
+            font-family: 'Space Grotesk', sans-serif;
+            letter-spacing: -0.01em;
+        }
+
+        .stApp {
+            background:
+                radial-gradient(1000px 500px at -10% -20%, color-mix(in srgb, var(--gs-brand) 16%, transparent), transparent 45%),
+                radial-gradient(700px 380px at 110% 5%, color-mix(in srgb, #f97316 10%, transparent), transparent 48%),
+                var(--gs-bg);
+        }
+
+        .hero-box {
+            border: 1px solid var(--gs-line);
+            border-radius: 18px;
+            padding: 1rem 1.15rem;
+            background: linear-gradient(120deg, var(--gs-surface) 0%, color-mix(in srgb, var(--gs-surface) 84%, var(--gs-bg)) 100%);
+            box-shadow: 0 8px 18px color-mix(in srgb, #000 8%, transparent);
+            margin-bottom: 0.7rem;
+        }
+
+        .hero-kicker {
+            font-size: 0.76rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--gs-brand);
+            font-weight: 700;
+            margin: 0 0 0.2rem 0;
+        }
+
+        .hero-title {
+            margin: 0 0 0.25rem 0;
+            font-size: clamp(1.35rem, 2.8vw, 2rem);
+        }
+
+        .hero-sub {
+            margin: 0;
+            color: var(--gs-soft);
+            font-size: 0.94rem;
+        }
+
+        .mode-shell {
+            border: 1px solid var(--gs-line);
+            border-radius: 14px;
+            padding: 0.8rem 0.95rem;
+            background: linear-gradient(180deg, var(--gs-surface), color-mix(in srgb, var(--gs-surface) 88%, var(--gs-bg)));
+            margin-bottom: 0.65rem;
+        }
+
+        .mode-title {
+            margin: 0;
+            font-weight: 700;
+            font-size: 1.02rem;
+        }
+
+        .mode-sub {
+            margin: 0.25rem 0 0 0;
+            color: var(--gs-soft);
+            font-size: 0.9rem;
+        }
+
+        .answer-shell {
+            border: 1px solid var(--gs-line);
+            border-radius: 14px;
+            padding: 0.8rem 0.9rem;
+            background: color-mix(in srgb, var(--gs-surface) 88%, var(--gs-bg));
+            margin: 0.5rem 0 0.7rem 0;
+        }
+
+        .quick-label {
+            color: var(--gs-soft);
+            font-size: 0.84rem;
+            margin-bottom: 0.35rem;
+        }
+
+        div[data-testid="stMetric"] {
+            border: 1px solid var(--gs-line);
+            border-radius: 12px;
+            padding: 0.25rem 0.6rem;
+            background: color-mix(in srgb, var(--gs-surface) 90%, var(--gs-bg));
+        }
+
+        [data-testid="stSidebar"] {
+            border-right: 1px solid var(--gs-line);
+        }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
+def render_hero_section() -> None:
+    """Render top dashboard hero."""
+    total_interactions = (
+        len(st.session_state.history_docs)
+        + len(st.session_state.history_product)
+        + len(st.session_state.history_video)
+        + len(st.session_state.history_research)
+    )
+    st.markdown(
+        f"""
+        <section class="hero-box">
+            <p class="hero-kicker">Multi-Agent Intelligence Workspace</p>
+            <h1 class="hero-title">GenAI Intelligence Studio</h1>
+            <p class="hero-sub">One workspace for document Q&A, product planning, video intelligence, and web research.</p>
+            <p class="hero-sub">Total interactions: {total_interactions}</p>
+        </section>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
+def render_mode_shell(title: str, subtitle: str) -> None:
+    """Render section shell used by each brain tab."""
+    st.markdown(
+        f"""
+        <section class="mode-shell">
+            <p class="mode-title">{title}</p>
+            <p class="mode-sub">{subtitle}</p>
+        </section>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
+def render_answer_shell(title: str) -> None:
+    """Render answer heading card."""
+    st.markdown(
+        f"""
+        <section class="answer-shell">
+            <strong>{title}</strong>
+        </section>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
+def render_quick_prompts(mode: str, key_prefix: str) -> str:
+    """Render quick prompt chips as buttons and return selected prompt."""
+    prompts = {
+        "docs": [
+            "Summarize my uploaded files in key points",
+            "Extract actionable insights from these documents",
+            "Explain the most important concepts simply",
+        ],
+        "product": [
+            "AI learning assistant for college students",
+            "MVP for service marketplace with trust layer",
+            "B2B SaaS idea for customer support automation",
+        ],
+        "video": [
+            "Give timeline summary with timestamps",
+            "List the most important moments in this video",
+            "Convert this lecture into revision notes",
+        ],
+        "research": [
+            "Compare top AI note-taking apps with pricing",
+            "Best laptops for developers under $1200",
+            "Compare vector databases for RAG in 2026",
+        ],
+    }
+    options = prompts.get(mode, [])
+    if not options:
+        return ""
+
+    st.markdown("<p class='quick-label'>Quick prompts</p>", unsafe_allow_html=True)
+    cols = st.columns(3)
+    chosen = ""
+    for idx, text in enumerate(options):
+        with cols[idx % 3]:
+            if st.button(f"{idx + 1}. {text[:33]}...", key=f"{key_prefix}_prompt_{idx}"):
+                chosen = text
+    return chosen
+
+
 def get_mode_indicator(mode: str) -> str:
     """Get visual indicator for active mode."""
     indicators = {
@@ -244,9 +439,18 @@ def main():
     )
 
     init_session_state()
+    apply_custom_theme()
+    render_hero_section()
 
-    st.title("🤖 GenAI Intelligence Studio")
-    st.caption("Groq + FAISS + HuggingFace • Agentic RAG • Multi-Agent System")
+    top_metrics = st.columns(4)
+    with top_metrics[0]:
+        st.metric("Doc Queries", len(st.session_state.history_docs))
+    with top_metrics[1]:
+        st.metric("Product Runs", len(st.session_state.history_product))
+    with top_metrics[2]:
+        st.metric("Video Q&A", len(st.session_state.history_video))
+    with top_metrics[3]:
+        st.metric("Research Tasks", len(st.session_state.history_research))
 
     # Sidebar settings
     st.sidebar.header("⚙️ Settings")
@@ -302,7 +506,10 @@ def main():
                 st.session_state.user_id, "docs"
             )
         
-        st.subheader("📚 Ask Your Documents (FAISS + HF Embeddings)")
+        render_mode_shell(
+            "📚 Doc Brain (FAISS + Embeddings)",
+            "Upload documents once, then ask focused questions with memory-aware answers.",
+        )
         
         # Mode indicator
         col1, col2 = st.columns([3, 1])
@@ -350,6 +557,10 @@ def main():
             with st.expander("💬 Conversation History", expanded=False):
                 render_chat_history(st.session_state.history_docs, "docs")
 
+        picked_docs_prompt = render_quick_prompts("docs", "docs")
+        if picked_docs_prompt:
+            st.session_state.docs_question = picked_docs_prompt
+
         question_docs = st.text_input(
             "Ask a question about your documents:",
             placeholder="e.g., Summarize chapter 3, or explain this concept...",
@@ -396,7 +607,7 @@ def main():
                         st.session_state.docs_session.add_message("assistant", result_state.get("answer", ""))
                         chat_history.save_session(st.session_state.docs_session)
 
-                        st.markdown("### 💡 Answer")
+                        render_answer_shell("💡 Doc Brain Answer")
                         st.markdown(result_state.get("answer", ""))
                         st.caption(f"⏱️ Response time: {elapsed:.2f} seconds")
                         st.caption(f"🔎 Detected intent: {result_state.get('intent')}")
@@ -441,12 +652,19 @@ def main():
                 st.session_state.user_id, "product"
             )
         
-        st.subheader("🚀 Product Builder – Idea → MVP Blueprint")
+        render_mode_shell(
+            "🚀 Product Builder",
+            "Turn rough ideas into practical MVP blueprints with architecture and roadmap.",
+        )
         
         # Mode indicator
         col1, col2 = st.columns([3, 1])
         with col2:
             st.warning("🟠 **Product Builder Active**")
+
+        picked_product_prompt = render_quick_prompts("product", "product")
+        if picked_product_prompt:
+            st.session_state.product_idea = picked_product_prompt
 
         idea = st.text_area(
             "Describe your product idea:",
@@ -501,7 +719,7 @@ def main():
                     st.session_state.product_session.add_message("assistant", result_state.get("answer", ""))
                     chat_history.save_session(st.session_state.product_session)
 
-                    st.markdown("### 📄 MVP Blueprint")
+                    render_answer_shell("📄 MVP Blueprint")
                     st.markdown(result_state.get("answer", ""))
                     st.caption(f"⏱️ Response time: {elapsed:.2f} seconds")
 
@@ -531,7 +749,10 @@ def main():
                 st.session_state.user_id, "video"
             )
         
-        st.subheader("🎥 Video Brain – Understand Any YouTube Lecture")
+        render_mode_shell(
+            "🎥 Video Brain",
+            "Process YouTube transcripts and ask high-signal questions with cited snippets.",
+        )
         
         # Mode indicator
         col1, col2 = st.columns([3, 1])
@@ -541,8 +762,11 @@ def main():
             else:
                 st.info("🔵 **Upload Video First**")
         
-        video_url = st.text_input("Enter YouTube URL:", key="video_url_input", 
-                                   placeholder="https://www.youtube.com/watch?v=...")
+        video_url = st.text_input(
+            "Enter YouTube URL:",
+            key="video_url_input",
+            placeholder="https://www.youtube.com/watch?v=...",
+        )
 
         if st.button("🚀 Process Video", key="process_video_btn", type="primary"):
             if video_url:
@@ -589,6 +813,10 @@ def main():
                     st.markdown(f"**A:** {item['answer'][:150]}...")
                     st.divider()
 
+        picked_video_prompt = render_quick_prompts("video", "video")
+        if picked_video_prompt:
+            st.session_state.video_ask = picked_video_prompt
+
         ask_video = st.text_input("Ask about the video:", key="video_ask")
 
         if st.button("🎬 Ask Video Brain", key="ask_video_btn"):
@@ -623,7 +851,7 @@ def main():
                         st.session_state.video_session.add_message("assistant", result_state.get("answer", ""))
                         chat_history.save_session(st.session_state.video_session)
 
-                        st.markdown("### 🎥 Answer")
+                        render_answer_shell("🎥 Video Brain Answer")
                         st.markdown(result_state.get("answer", ""))
                         st.caption(f"⏱️ Response time: {elapsed:.2f} seconds")
 
@@ -657,7 +885,10 @@ def main():
                 st.session_state.user_id, "research"
             )
         
-        st.subheader("🧭 Auto Research Agent – Live Web Research")
+        render_mode_shell(
+            "🧭 Research Agent",
+            "Run live web research with sources, synthesized analysis, and follow-up paths.",
+        )
         
         # Mode indicator
         col1, col2 = st.columns([3, 1])
@@ -676,6 +907,10 @@ def main():
         # Initialize history
         if "history_research" not in st.session_state:
             st.session_state.history_research = []
+
+        picked_research_prompt = render_quick_prompts("research", "research")
+        if picked_research_prompt:
+            st.session_state.research_question = picked_research_prompt
 
         research_question = st.text_area(
             "What do you want to research?",
@@ -778,6 +1013,7 @@ def main():
                     st.info(f"**⚡ Quick Answer:** {live['answer']}")
 
                 # Show the full agent-generated answer
+                render_answer_shell("📊 Research Synthesis")
                 st.markdown(res["answer"])
 
                 # Follow-up questions
